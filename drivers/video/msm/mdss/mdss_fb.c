@@ -113,7 +113,7 @@ static int fbi_list_index;
 
 bool backlight_dimmer = false;
 module_param(backlight_dimmer, bool, 0755);
-static int backlight_min = 5;
+static int backlight_min = 10;
 
 static u32 mdss_fb_pseudo_palette[16] = {
 	0x00000000, 0xffffffff, 0xffffffff, 0xffffffff,
@@ -358,7 +358,7 @@ int prev_value_ex = 0;
 static struct dentry *debugfs_bl_ex_enable_time;
 
 	if (backlight_dimmer) {
-		bl_lvl = MAX(backlight_min, mdss_backlight_trans(value, mfd->panel_info, true) - 142);
+		bl_lvl = MAX(backlight_min, mdss_backlight_trans(value, mfd->panel_info, true) - 100);
  	} else {
 		bl_lvl = MAX(backlight_min, mdss_backlight_trans(value, mfd->panel_info, true));
  	}
