@@ -58,6 +58,7 @@ show up in /proc/sys/kernel:
 - panic_on_oops
 - panic_on_stackoverflow
 - panic_on_unrecovered_nmi
+- panic_on_rcu_stall
 - perf_cpu_time_max_percent
 - perf_event_paranoid
 - pid_max
@@ -589,16 +590,14 @@ the existing panic controls already in that directory.
 
 ==============================================================
 
-panic_on_unrecovered_nmi:
+panic_on_rcu_stall:
 
-The default Linux behaviour on an NMI of either memory or unknown is
-to continue operation. For many environments such as scientific
-computing it is preferable that the box is taken out and the error
-dealt with than an uncorrected parity/ECC error get propagated.
+When set to 1, calls panic() after RCU stall detection messages. This
+is useful to define the root cause of RCU stalls using a vmcore.
 
-A small number of systems do generate NMI's for bizarre random reasons
-such as power management so the default is off. That sysctl works like
-the existing panic controls already in that directory.
+0: do not panic() when RCU stall takes place, default behavior.
+
+1: panic() after printing RCU stall messages.
 
 ==============================================================
 
