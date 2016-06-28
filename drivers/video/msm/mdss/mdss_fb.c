@@ -111,6 +111,10 @@ static int prev_blank_mode;
 static struct fb_info *fbi_list[MAX_FBI_LIST];
 static int fbi_list_index;
 
+#define MDSS_BRIGHT_TO_BL_DIM(out, v) do {\
+			out = (v*v+46000*v-3000000)/50000;\
+			} while (0)
+
 bool backlight_dimmer = false;
 module_param(backlight_dimmer, bool, 0755);
 static int backlight_min = 10;
@@ -357,11 +361,15 @@ int prev_value_ex = 0;
 
 static struct dentry *debugfs_bl_ex_enable_time;
 
-	if (backlight_dimmer) {
-		bl_lvl = MAX(backlight_min, mdss_backlight_trans(value, mfd->panel_info, true) - 100);
- 	} else {
-		bl_lvl = MAX(backlight_min, mdss_backlight_trans(value, mfd->panel_info, true));
- 	}
+	if (value > mfd->panel_info->brightness_max)
+		value = mfd->panel_info->brightness_max;
+
+	bl_lvl = mdss_backlight_trans(value, mfd->panel_info, true);
+
+	if (backlight_dimmer)
+		MDSS_BRIGHT_TO_BL_DIM(bl_lvl, bl_lvl);
+
+	bl_lvl = MAX(backlight_min, bl_lvl);
 
 static int bl_ex_enable_time_show(struct seq_file *m, void *unused)
 {
