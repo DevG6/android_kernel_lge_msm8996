@@ -114,6 +114,7 @@ static struct vm_special_mapping vdso_spec[2];
 static int __init vdso_init(void)
 {
 	int i;
+	struct page **vdso_pagelist;
 	unsigned long pfn;
 
 	if (memcmp(&vdso_start, "\177ELF", 4)) {
