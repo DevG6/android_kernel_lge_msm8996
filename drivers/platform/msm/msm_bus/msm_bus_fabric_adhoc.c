@@ -610,6 +610,13 @@ static int msm_bus_enable_node_qos_clk(struct msm_bus_node_device_type *node,
 		goto exit_enable_node_qos_clk;
 	}
 
+	if (!bus_node->num_node_qos_clks) {
+		MSM_BUS_DBG("%s: Num of clks is zero\n", __func__);
+		ret = -EINVAL;
+		*no_defer = true;
+		goto exit_enable_node_qos_clk;
+	}
+
 	for (i = 0; i < bus_node->num_node_qos_clks; i++) {
 		if (!bus_node->node_qos_clks[i].enable_only_clk) {
 			rounded_rate =
