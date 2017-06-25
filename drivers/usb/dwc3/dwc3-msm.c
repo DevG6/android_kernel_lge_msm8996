@@ -90,6 +90,10 @@ static int firstboot_check = 1;
 #define DWC3_HVDCP_CHG_MAX 1900
 #endif
 #else
+#ifdef CONFIG_FORCE_FAST_CHARGE
+#define DWC3_IDEV_CHG_MAX 2500
+#define DWC3_HVDCP_CHG_MAX 2500
+#else
 #define DWC3_IDEV_CHG_MAX 1500
 #define DWC3_HVDCP_CHG_MAX 1800
 #endif
