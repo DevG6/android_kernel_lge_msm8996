@@ -76,3 +76,5 @@ obj-$(CONFIG_MEMORY_STATE_TIME) += memory_state_time.o
 
 obj-$(CONFIG_LGE_IRRC)		+= lge_uei_irrc.o
 obj-$(CONFIG_FORCE_FAST_CHARGE)		+= fastcharge/
+
+obj-$(CONFIG_UCI)  += uci/
