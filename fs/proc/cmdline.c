@@ -45,7 +45,7 @@ static bool magisk = true;
 
 extern bool is_magisk(void);
 extern bool is_magisk_sync(void);
-extern void init_magisk(void);
+extern void init_custom_fs(void);
 #endif
 
 static int cmdline_proc_show(struct seq_file *m, void *v)
@@ -97,7 +97,7 @@ static const struct file_operations cmdline_proc_fops = {
 static int __init proc_cmdline_init(void)
 {
 #if 1
-	init_magisk();
+	init_custom_fs();
 #endif
 
 	// copy it only once
