@@ -759,7 +759,7 @@ static int fpc1020_probe(struct spi_device *spi)
 	fpc1020->wakeup_enabled = false;
 	fpc1020->clocks_enabled = false;
 	fpc1020->clocks_suspended = false;
-	irqf = IRQF_TRIGGER_RISING | IRQF_ONESHOT;
+	irqf = IRQF_TRIGGER_RISING | IRQF_ONESHOT | IRQF_PERF_CRITICAL;
 
 	/* Although wakeup feature is desirable, it is doomed that the device will be
 	 * woken up due to false interrupt caused by hw reset.
