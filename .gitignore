@@ -22,6 +22,7 @@
 *.lst
 *.symtypes
 *.order
+modules.builtin
 *.elf
 *.bin
 *.gz
@@ -39,6 +40,8 @@ Module.symvers
 #
 # Top-level generic files
 #
+/out
+/out_ocn
 /tags
 /TAGS
 /linux
@@ -46,11 +49,18 @@ Module.symvers
 /vmlinuz
 /System.map
 /Module.markers
+/Module.symvers
 
 #
 # Debian directory (make deb-pkg)
 #
 /debian/
+
+#
+# Temp Keep Build Scripts Away
+#
+build-anykernel.sh
+build-anykernel.cfg
 
 #
 # git files that we don't want to ignore even it they are dot-files
@@ -62,6 +72,7 @@ Module.symvers
 # Generated include files
 #
 include/config
+include/linux/version.h
 include/generated
 arch/*/include/generated
 
@@ -85,6 +96,8 @@ GTAGS
 *.orig
 *~
 \#*#
+
+/net/wireguard/
 
 #
 # Leavings from module signing
