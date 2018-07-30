@@ -62,6 +62,7 @@ export USE_SCRIPTS=$USE_SCRIPTS
 export SPLIT_DTB=$SPLIT_DTB
 export DTBTOOL=$DTBTOOL
 #export ERROR_LOG=$ERROR_LOG
+export VARIANTS=$VARIANTS
 
 #################################################
 ## DO NOT CHANGE THIS:  PATHS And Configs      ##
@@ -267,13 +268,10 @@ KVER="$KVER" >&2
 ## Change Variant in anykernel.sh file ##
 function change_variant {
 		TAG=$VARIANT
-		if [ "$VARIANT" == "d855_lowmem" ]; then TAG="d855"
-		echo "TAG1: $TAG"
-		fi
 		echo "TAG: $TAG"
 		cd $REPACK_DIR
-		sed -i '12s/.*/device.name1='$TAG'/' anykernel.sh
-		sed -i '13s/.*/device.name2=LG-'$TAG'/' anykernel.sh
+		sed -i '19s/.*/device.name1='$TAG'/' anykernel.sh
+		sed -i '20s/.*/device.name2=LG-'$TAG'/' anykernel.sh
 		cd $KERNEL_DIR
 }
 
@@ -653,7 +651,9 @@ dialog --title "Build Kernel" \
 	response=$?
 	case $response in
 	0) 	build_log
-#		change_variant <--- Not needed for HTC Device #
+ 		if [ "$VARIANTS" == 1 ];then
+		change_variant
+		fi
 		make_kernel
 		make_dtb
 		make_modules
