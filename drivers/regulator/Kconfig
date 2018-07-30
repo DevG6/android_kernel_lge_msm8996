@@ -852,7 +852,7 @@ config REGULATOR_CPR3
 config REGULATOR_CPR3_VOLTAGE_CONTROL
 	bool "CPR3 regulator voltage control"
 	depends on REGULATOR_CPR3
-	default n
+	default y
 	help
 	  Enable msm8996 cpu voltage control
 
