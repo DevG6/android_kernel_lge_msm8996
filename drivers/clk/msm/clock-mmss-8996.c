@@ -3848,6 +3848,110 @@ static struct clk_lookup msm_clocks_gpu_8996_v2[] = {
 	CLK_LIST(gpu_gcc_dbg_clk),
 };
 
+// GPU Voltage Control for msm8996 Devices: //
+#ifdef CONFIG_REGULATOR_CPR3_MMSS_VOLTAGE_CONTROL
+extern int cpr3_regulator_get_ceiling_voltage(struct regulator *regulator,int cori);
+extern int cpr3_regulator_get_floor_voltage(struct regulator *regulator,int cori);
+extern int cpr3_regulator_get_last_voltage(struct regulator *regulator,int cori);
+extern int cpr3_regulator_set_ceiling_voltage(struct regulator *regulator,int cori, int volt);
+extern int cpr3_regulator_set_floor_voltage(struct regulator *regulator,int cori, int volt);
+extern int cpr3_regulator_set_last_voltage(struct regulator *regulator,int cori, int volt);
+		
+ssize_t gpu_get_Voltages(char *buf)
+{
+	ssize_t count = 0;
+	int i, uv;
+
+	if (!buf)
+		return 0;
+
+	//Ceiling
+	for (i = 1; i < gfx3d_clk_src.c.num_fmax; i++) {
+		uv = cpr3_regulator_get_ceiling_voltage(
+					gfx3d_clk_src.c.vdd_class->regulator[0],
+					gfx3d_clk_src.c.vdd_class->vdd_uv[i]);
+		if (uv < 0) return 0;
+		count += sprintf(buf + count, "Gc_Vmax:%lumhz: %d mV\n",
+					gfx3d_clk_src.c.fmax[i] / 1000000,
+					uv / 1000);
+	//Floor
+		uv = cpr3_regulator_get_floor_voltage(
+					gfx3d_clk_src.c.vdd_class->regulator[0],
+					gfx3d_clk_src.c.vdd_class->vdd_uv[i]);
+		if (uv < 0) return 0;
+		count += sprintf(buf + count, "Cc_Vmin:%lumhz: %d mV\n",
+					gfx3d_clk_src.c.fmax[i] / 1000000,
+					uv / 1000);
+	//current
+		uv = cpr3_regulator_get_last_voltage(
+					gfx3d_clk_src.c.vdd_class->regulator[0],
+					gfx3d_clk_src.c.vdd_class->vdd_uv[i]);
+		if (uv < 0) return 0;
+		count += sprintf(buf + count, "Cc_Vcur:%lumhz: %d mV\n",
+					gfx3d_clk_src.c.fmax[i] / 1000000,
+					uv / 1000);
+	}
+
+	return count;
+}
+ssize_t gpu_set_Voltages(const char *buf, size_t count)
+{
+	int i, mv, ret;
+	char line[32];
+
+	if (!buf)
+		return -EINVAL;
+
+	for (i = 1; i < gfx3d_clk_src.c.num_fmax; i++) 
+	{
+		ret = sscanf(buf, "%d", &mv);
+		if (ret != 1)
+			return -EINVAL;
+
+		ret = cpr3_regulator_set_ceiling_voltage(
+					gfx3d_clk_src.c.vdd_class->regulator[0],
+					gfx3d_clk_src.c.vdd_class->vdd_uv[i],
+					mv * 1000);
+        if (ret < 0)
+			return ret;
+
+        ret = sscanf(buf, "%s", line);
+		buf += strlen(line) + 1;
+	//floor
+		ret = sscanf(buf, "%d", &mv);
+		if (ret != 1)
+			return -EINVAL;
+
+		ret = cpr3_regulator_set_floor_voltage(
+					gfx3d_clk_src.c.vdd_class->regulator[0],
+					gfx3d_clk_src.c.vdd_class->vdd_uv[i],
+					mv * 1000);
+        if (ret < 0)
+			return ret;
+
+        ret = sscanf(buf, "%s", line);
+		buf += strlen(line) + 1;
+	//current
+		ret = sscanf(buf, "%d", &mv);
+		if (ret != 1)
+			return -EINVAL;
+
+		ret = cpr3_regulator_set_last_voltage(
+					gfx3d_clk_src.c.vdd_class->regulator[0],
+					gfx3d_clk_src.c.vdd_class->vdd_uv[i],
+					mv * 1000);
+        if (ret < 0)
+			return ret;
+
+        ret = sscanf(buf, "%s", line);
+		buf += strlen(line) + 1;
+	}
+
+	return count;
+}
+#endif
+// End Of GPU Voltage Control For msm8996 Devices //
+
 static void msm_gpucc_8996_v2_fixup(void)
 {
 	gpu_gx_gfx3d_clk.c.parent = &gfx3d_clk_src_v2.c;
