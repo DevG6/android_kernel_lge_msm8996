@@ -63,6 +63,9 @@ export SPLIT_DTB=$SPLIT_DTB
 export DTBTOOL=$DTBTOOL
 #export ERROR_LOG=$ERROR_LOG
 export VARIANTS=$VARIANTS
+export CLANG_BUILDS=$CLANG_BUILDS
+export CC=$CC
+export CLANG_TRIPLE=$CLANG_TRIPLE
 
 #################################################
 ## DO NOT CHANGE THIS:  PATHS And Configs      ##
@@ -79,6 +82,7 @@ TOOLCHAIN_DIR="$TOOLCHAIN_DIR" >&2
 TC_NAME="$TC_NAME" >&2
 TC_PREFIX="$TC_PREFIX" >&2
 TC_DESTRO="$TC_DESTRO" >&2
+CLANG_NAME="$CLANG_NAME" >&2
 SIGNAPK="$SIGNAPK" >&2
 SIGNAPK_KEYS="$SIGNAPK_KEYS" >&2
 DEFCONFIGS="$DEFCONFIGS" >&2
@@ -488,7 +492,14 @@ function make_kernel {
 		echo
 		mkdir -p $OUTPUT_DIR
 		make O=$OUTPUT_DIR $DEFCONFIG
+		if [ "$CLANG_BUILDS" == 1 ];then
+		make O=$OUTPUT_DIR $THREAD ARCH=$ARCH \
+		CC=$CC CLANG_TRIPLE=$CLANG_TRIPLE \
+		CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_STRIP=1
+		else
+		echo "NOTE: Not Using Clang:"
 		make O=$OUTPUT_DIR $THREAD INSTALL_MOD_STRIP=1
+		fi
 }
 
 function make_modules {
@@ -868,6 +879,32 @@ function tc_change() {
         dialog --msgbox "You choose:\nNo. $item --> $selection" 6 50
 		replace_string build-anykernel.cfg "TC_NAME=$TC_OLD" "$TC_OLD" "$TC_NAME"
     fi
+}
+
+## Change Clang ##
+function clang_change() {
+    fileroot=$TOOLCHAIN_DIR/clang
+    IFS_BAK=$IFS
+    IFS=$'\n' # wegen Filenamen mit Blanks
+    array=( $(ls $fileroot) )
+    n=0
+    for item in ${array[@]}
+    do
+        menuitems="$menuitems $n ${item// /_}" # subst. Blanks with "_"  
+        let n+=1
+    done
+    IFS=$IFS_BAK
+    dialog --backtitle "ToolChain Selection:" \
+           --title "Select a Clang Chain:" --menu \
+           "Choose one of the available Clang:" 16 58 8 $menuitems 2> $_temp
+    if [ $? -eq 0 ]; then
+        item=`cat $_temp`
+        selection=${array[$(cat $_temp)]}
+		CLANG_OLD="$CLANG_NAME"
+		CLANG_NAME="$selection"
+        dialog --msgbox "You choose:\nNo. $item --> $selection" 6 50
+		replace_string build-anykernel.cfg "CLANG_NAME=$CLANG_OLD" "$CLANG_OLD" "$CLANG_NAME"
+    fi
 } 
 
 ###############################################################################
@@ -877,21 +914,23 @@ function tc_menu {
 
 cmd=(dialog --keep-tite --menu "Select options:" 22 76 16)
 
-options=(1 "Change ToolChain"
-         2 "Change Destro Current: ${TC_DESTRO}"
-		 3 "Change Prefix")
+options=(1 "Change Clang: Current: ${CLANG_NAME}"
+        2 "Change ToolChain: Current: ${TC_NAME}"
+         3 "Change Destro Current: ${TC_DESTRO}"
+		 4 "Change Prefix")
 
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
 for choice in $choices
 do
     case $choice in
-        1)
-			tc_change
+		1)	clang_change
 			break;;
-		2)  tc_changedestro
+		2)	tc_change
 			break;;
-		3) echo "Not Implanted yet"
+		3)  tc_changedestro
+			break;;
+		4) echo "Not Implanted yet"
 			break;;
 		
     esac
