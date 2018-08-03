@@ -593,11 +593,11 @@ echo -e "${restore}"
 ## Build Menu ##
 cmd=(dialog --keep-tite --menu "Select options:" 22 76 16)
 
-options=(1 "h872"
-	 2 "h870"
-	 3 "us997"
-	 4 "h872-test"
-         5 "Build All")
+options=( 1 "H872 (G6 T-Mo)"
+	2 "H870 (G6 Global)"
+	3 "US997 (G6 US)"
+	4 "H918 (V20 T-Mo)"
+        5 "Build All")
 
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
@@ -616,8 +616,8 @@ do
 		DEFCONFIG="lineageos_us997_defconfig"
 		break;;
 	
-	4)	VARIANT="h872-test"
-		DEFCONFIG="h872_defconfig"
+	4)	VARIANT="h918"
+		DEFCONFIG="lineageos_h918_defconfig"
 		break;;
 		
 	5)	VARIANT="msm"
