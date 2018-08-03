@@ -239,29 +239,17 @@ function clean_all {
 		rm -rf $DTBIMAGE
 		echo "Removing any backups from $COMPRESSED_IMAGE_DIR"
 		rm -rf *.bak
-#		echo "Deleting ramdisk Files From $COMPRESSED_IMAGE_DIR"
-#		rm -rf ramdisk/*
 		echo "Removing any left over zip packages from $REPACK_DIR"
 		cd $REPACK_DIR
 		rm -rf *.bak
 		rm -rf *.zip
 		cd $KERNEL_DIR
 		if [ -e "$OUTPUT_DIR" ]; then
-		echo "Deleting $OUTPUT_DIR."
+		echo "Deleting ${OUTPUT_DIR} Directory."
 		rm -rf $OUTPUT_DIR
 		fi
-		echo "Deleting arch/arm64/boot/*.dtb's"
-		rm -rf arch/arm64/boot/*dtb
-		rm -rf arch/arm64/boot/dts/*dtb
-		echo "Deleting arch/arm/boot/dts/qcom/*.dtb's"
-		rm -rf arch/arm/boot/dts/qcom/*.dtb
-		echo "Deleting arch/arm64/boot/Image*"
-		rm -rf arch/arm64/boot/Image*
-		echo "Deleting firmware/synaptics/p1/*.gen.*"
-		rm -rf firmware/synaptics/p1/*gen*
-		echo
 		echo "Running Make Clean and Make MrProper"
-		make clean && make mrproper
+		make O=${OUTPUT_DIR} clean && make O=${OUTPUT_DIR} mrproper
 }
 
 function set_timestamp() {
@@ -460,29 +448,6 @@ echo
 [ -f $INPUT ] && rm $INPUT
 unset ERROR_LOG
 exit
-}
-
-function update_clang_config() {
-  ${KERNEL_DIR}/scripts/config --file ${OUTPUT_DIR}/.config \
-    -d CC_WERROR
-  (cd ${OUTPUT_DIR} && \
-    make O=${OUTPUT_DIR} ARCH=$ARCH CROSS_COMPILE=${CLANG_PATH} $DEFCONFIG)
-	echo "test: ARCH=$ARCH CROSS_COMPILE=${CLANG_PATH} $DEFCONFIG"
-	echo "Update Clang Configs:"
-}
-
-function CHECK_CLANG {
-export ARCH=arm64
-export CC=clang
-export PATH=/home/eliminater74/Builds/kernel/toolchains/PUREFUSIONLLVM/clang_linux-x86_7.x/bin/:$PATH
-export CLANG_PATH=/home/eliminater74/Builds/kernel/toolchains/PUREFUSIONLLVM/clang_linux-x86_7.x/bin/clang
-export CLANG_TRIPLE=aarch64-linux-gnu-
-export CROSS_COMPILE=$CROSS_COMPILE
-export DEFCONFIG=$DEFCONFIG
-update_clang_config
-export LINUX_GCC_CROSS_COMPILE_PREBUILTS_BIN=$CROSS_COMPILE
- echo "Using Clang:"
-
 }
 
 function make_kernel {
@@ -843,7 +808,7 @@ dialog --title "Build Kernel" \
 	response=$?
 	case $response in
 	0) 	build_log
-#		change_variant <--- Not needed for HTC Device #
+		change_variant 
 		make_kernel
 		make_dtb
 		make_modules
