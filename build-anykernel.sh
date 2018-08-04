@@ -204,10 +204,24 @@ function INITIALIZE_SCRIPT() {
 	DVER=`cat $_temp | head -1`
 
 	# Bash Color
-	green='\033[01;32m'
-	red='\033[01;31m'
+	RESTORE=$(echo -en '\033[0m')
+	RED=$(echo -en '\033[00;31m')
+	GREEN=$(echo -en '\033[00;32m')
+	YELLOW=$(echo -en '\033[00;33m')
+	BLUE=$(echo -en '\033[00;34m')
+	MAGENTA=$(echo -en '\033[00;35m')
+	PURPLE=$(echo -en '\033[00;35m')
+	CYAN=$(echo -en '\033[00;36m')
+	LIGHTGRAY=$(echo -en '\033[00;37m')
+	LRED=$(echo -en '\033[01;31m')
+	LGREEN=$(echo -en '\033[01;32m')
+	LYELLOW=$(echo -en '\033[01;33m')
+	LBLUE=$(echo -en '\033[01;34m')
+	LMAGENTA=$(echo -en '\033[01;35m')
+	LPURPLE=$(echo -en '\033[01;35m')
+	LCYAN=$(echo -en '\033[01;36m')
+	WHITE=$(echo -en '\033[01;37m')
 	blink_red='\033[05;31m'
-	restore='\033[0m'
 	clear
 }
 
@@ -476,31 +490,29 @@ function make_modules {
 		find $KERNEL_DIR -name '*.ko' -type f -exec cp -v '{}' $MODULES_DIR/ \;
 		cd $MODULES_DIR
 		if [ "$STRIP_MODULES" == 1 ];then
-		echo -e "${green}"
+		echo -e "${GREEN}"
 		echo "----------------------------------------"
-		echo -e "\e[31m"
-		echo -e "\e[5mStripping Modules For Size"
-		echo -e "${green}"
-		echo "--------------------------"
+		echo -e "${RESTORE}"
+		echo -e "${RED}Stripping Modules For Size"
+		echo -e "${GREEN}"
 		echo "----------------------------------------"
-		echo -e "\e[0m"
+		echo -e "${RESTORE}"
 		echo $STRIP --strip-unneeded --strip-debug --verbose *.ko
 		$STRIP --strip-debug --verbose *.ko
 		else
 		echo "Not Stripping Modules, Set STRIP_MODULES=1 to Strip them."
 		fi
 		if [ "$SIGN_MODULES" == 1 ];then
-		  echo -e "${blue}"
+		  echo -e "${GREEN}"
 		  echo "----------------------------------------"
-		  echo -e "\e[31m"
-		  echo -e "\e[5mSigning Modules:"
-		  echo -e "${blue}"
-		  echo "--------------------------"
+		  echo -e "${RESTORE}"
+		  echo -e ""${RED}"Signing Modules:"
+		  echo -e "${GREEN}"
 		  echo "----------------------------------------"
-		  echo -e "\e[0m"
+		  echo -e "${RESTORE}"
 		  echo "Signing Modules.........."
                   find $MODULES_DIR -name '*.ko' -exec \
-		  $KERNEL_DIR/scripts/sign-file sha512 \
+		  $KERNEL_DIR/scripts/sign-file -v sha512 \
 		  $KERNEL_DIR/$OUTPUT_DIR/signing_key.priv \
 		  $KERNEL_DIR/$OUTPUT_DIR/signing_key.x509 {} \;
 		else
