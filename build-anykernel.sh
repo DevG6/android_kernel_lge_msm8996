@@ -58,6 +58,7 @@ export KBUILD_BUILD_HOST=$KBUILD_BUILD_HOST
 export SET_LOCAL=$SET_LOCAL
 export CCACHE=$CCACHE
 export STRIP_MODULES=$STRIP_MODULES
+export SIGN_MODULES=$SIGN_MODULES
 export USE_SCRIPTS=$USE_SCRIPTS
 export SPLIT_DTB=$SPLIT_DTB
 export DTBTOOL=$DTBTOOL
@@ -485,8 +486,26 @@ function make_modules {
 		echo -e "\e[0m"
 		echo $STRIP --strip-unneeded --strip-debug --verbose *.ko
 		$STRIP --strip-debug --verbose *.ko
-		fi
+		else
 		echo "Not Stripping Modules, Set STRIP_MODULES=1 to Strip them."
+		fi
+		if [ "$SIGN_MODULES" == 1 ];then
+		  echo -e "${blue}"
+		  echo "----------------------------------------"
+		  echo -e "\e[31m"
+		  echo -e "\e[5mSigning Modules:"
+		  echo -e "${blue}"
+		  echo "--------------------------"
+		  echo "----------------------------------------"
+		  echo -e "\e[0m"
+		  echo "Signing Modules.........."
+                  find $MODULES_DIR -name '*.ko' -exec \
+		  $KERNEL_DIR/scripts/sign-file sha512 \
+		  $KERNEL_DIR/$OUTPUT_DIR/signing_key.priv \
+		  $KERNEL_DIR/$OUTPUT_DIR/signing_key.x509 {} \;
+		else
+		  echo "WARNING: Not Signing Modules"
+		fi
 }
 
 function make_dtb {
