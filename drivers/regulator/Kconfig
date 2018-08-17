@@ -878,13 +878,6 @@ config REGULATOR_CPR3_MMSS
 	  thread to monitor the MMSS voltage requirements.  This driver reads
 	  initial voltage values out of hardware fuses and CPR target quotient
 	  values out of device tree.
-	  
-config REGULATOR_CPR3_MMSS_VOLTAGE_CONTROL
-	bool "CPR3 MMSS regulator voltage control"
-	depends on REGULATOR_CPR3_MMSS
-	default y
-	help
-	  Enable msm8996 gpu voltage control
 
 config REGULATOR_CPR4_APSS
 	bool "CPR4 regulator for APSS"
