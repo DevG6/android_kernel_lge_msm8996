@@ -22,6 +22,24 @@ echo "Configure File is missing..."
 exit
 fi
 
+### Check For Given Paths: Toolchains/Anykernel2 Directory:
+
+if [ -d "${TOOLCHAIN_DIR}/${TC_DESTRO}/${TC_NAME}/bin/" ]
+then
+echo "Toolchain Exist" >&2
+else
+echo "Toolchain Doesnt Exist. FIX Path in Configuration:"
+exit
+fi
+
+if [ -d "$REPACK_DIR" ]
+then
+echo "Anykernel2 Repack Directory Exist." >&2
+else
+echo "No Anykernel2 Repack Directory Exist, Set paths in Configuration:"
+exit
+fi
+
 # Optimize CPU Threads
 # CPUS=$(grep "^processor" /proc/cpuinfo | wc -l)
 # JOBS=$(bc <<< "$CPUS");
