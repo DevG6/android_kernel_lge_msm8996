@@ -839,21 +839,6 @@ static ssize_t store_UV_mV_table(struct cpufreq_policy *policy, const char *buf,
 #endif
 // End Of CPU Voltage Control For msm8996 Devices //
 
-// Add GPU Voltage Control For msm8996 Devices //
-#ifdef CONFIG_REGULATOR_CPR3_MMSS_VOLTAGE_CONTROL
-extern ssize_t gpu_get_Voltages(char *buf);
-static ssize_t show_GPU_UV_mV_table(struct cpufreq_policy *policy, char *buf)
-{
-	return gpu_get_Voltages(buf);
-}
-extern ssize_t set_Voltages(const char *buf, size_t count);
-static ssize_t store_GPU_UV_mV_table(struct cpufreq_policy *policy, const char *buf, size_t count)
-{
-	return set_Voltages(buf, count);
-}
-#endif
-// End Of GPU Voltage Control For msm8996 Devices //
-
 cpufreq_freq_attr_ro_perm(cpuinfo_cur_freq, 0400);
 cpufreq_freq_attr_ro(cpuinfo_min_freq);
 cpufreq_freq_attr_ro(cpuinfo_max_freq);
@@ -871,9 +856,6 @@ cpufreq_freq_attr_rw(scaling_setspeed);
 #ifdef CONFIG_REGULATOR_CPR3_VOLTAGE_CONTROL
 cpufreq_freq_attr_rw(UV_mV_table);
 #endif
-#ifdef CONFIG_REGULATOR_CPR3_MMSS_VOLTAGE_CONTROL
-cpufreq_freq_attr_rw(GPU_UV_mV_table);
-#endif
 
 static struct attribute *default_attrs[] = {
 	&cpuinfo_min_freq.attr,
@@ -889,9 +871,6 @@ static struct attribute *default_attrs[] = {
 	&scaling_setspeed.attr,
 #ifdef CONFIG_REGULATOR_CPR3_VOLTAGE_CONTROL
 	&UV_mV_table.attr,
-#endif
-#ifdef CONFIG_REGULATOR_CPR3_MMSS_VOLTAGE_CONTROL
-	&GPU_UV_mV_table.attr,
 #endif
 	NULL
 };
