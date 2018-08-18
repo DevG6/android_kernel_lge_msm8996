@@ -68,6 +68,12 @@ CONFIG_SDFAT_STATISTICS=y
 #CONFIG_NFC_NQ=n
 #CONFIG_CNSS=n
 #CONFIG_USELIB=n
+
+#
+# Unprivileged Configuration Interface
+#
+CONFIG_UCI=y
+
 # Added By Me
 CONFIG_SOUND_CONTROL=y
 # CONFIG_MSM_PRESERVE_MEM is not set
