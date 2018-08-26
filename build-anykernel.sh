@@ -24,13 +24,13 @@ fi
 
 ### Check For Given Paths: Toolchains/Anykernel2 Directory:
 
-if [ -d "${TOOLCHAIN_DIR}/${TC_DESTRO}/${TC_NAME}/bin/" ]
-then
-echo "Toolchain Exist" >&2
-else
-echo "Toolchain Doesnt Exist. FIX Path in Configuration:"
-exit
-fi
+#if [ -d "${TOOLCHAIN_DIR}/${TC_DESTRO}/${TC_NAME}/bin/" ]
+#then
+#echo "Toolchain Exist" >&2
+#else
+#echo "Toolchain Doesnt Exist. FIX Path in Configuration:"
+#exit
+#fi
 
 if [ -d "$REPACK_DIR" ]
 then
