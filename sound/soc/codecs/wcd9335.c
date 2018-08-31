@@ -14428,7 +14428,6 @@ static int tasha_codec_probe(struct snd_soc_codec *codec)
 			pr_info("%s: Disable enable_es9218p\n", __func__);
 #endif
 
-   priv_headset_type = tasha;
 
 	/* ASUS_BSP Paul +++ */
         if (!g_audiowizard_force_preset_sdev) {
