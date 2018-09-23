@@ -48,6 +48,7 @@
 #include <linux/ctype.h>
 
 #include <asm/uaccess.h>
+#include <linux/nebula_debug_tools.h>
 
 #include "../printk_interface.h"
 
@@ -1274,11 +1275,44 @@ static int syslog_print_all(char __user *buf, int size, bool clear)
 	return len;
 }
 
+#if defined(CONFIG_NEBULA_DEBUG_BOOTLOADER_LOG)
+static inline int insert_to_buf_ln(char __user *buf, int buf_len, char* str)
+{
+	int len = 0, ret_len = 0;
+	char *temp_buf;
+	len = strlen(str)+1;
+
+	temp_buf = kmalloc(len, GFP_KERNEL);
+	if (temp_buf == NULL)
+		return 0;
+
+	memcpy(temp_buf, str, len);
+	temp_buf[len-1] = '\n';
+	if (buf_len >= len) {
+		if (copy_to_user(buf, temp_buf, len)) {
+			pr_warn("insert_to_buf_ln, copy_to_user failed\n");
+		} else {
+			ret_len = len;
+		}
+	}
+
+	if (temp_buf)
+		kfree(temp_buf);
+
+	return ret_len;
+}
+#endif
+
 int do_syslog(int type, char __user *buf, int len, bool from_file)
 {
 	bool clear = false;
 	static int saved_console_loglevel = -1;
 	int error;
+#if defined(CONFIG_NEBULA_DEBUG_BOOTLOADER_LOG)
+	ssize_t lk_len = 0, lk_len_total = 0;
+#define HB_LAST_TITLE "[HB LAST]"
+#define HB_LOG_TITLE "[HB LOG]"
+#endif
 
 	error = check_syslog_permissions(type, from_file);
 	if (error)
@@ -1324,6 +1358,44 @@ int do_syslog(int type, char __user *buf, int len, bool from_file)
 		}
 		error = syslog_print_all(buf, len, clear);
 		break;
+#if defined(CONFIG_NEBULA_DEBUG_BOOTLOADER_LOG)
+	/* Read last kernel messages + LK/LAST LK log*/
+	case SYSLOG_ACTION_READ_ALL_APPEND_LK:
+		error = -EINVAL;
+		if (!buf || len < 0)
+			goto out;
+		error = 0;
+		if (!len)
+			goto out;
+		if (!access_ok(VERIFY_WRITE, buf, len)) {
+			error = -EFAULT;
+			goto out;
+		}
+
+		lk_len = insert_to_buf_ln(buf, len, HB_LAST_TITLE);
+		len -= lk_len;
+		buf += lk_len;
+		lk_len_total += lk_len;
+
+		lk_len = bldr_last_log_read_once(buf, len);
+		len -= lk_len;
+		buf += lk_len;
+		lk_len_total += lk_len;
+
+		lk_len = insert_to_buf_ln(buf, len, HB_LOG_TITLE);
+		len -= lk_len;
+		buf += lk_len;
+		lk_len_total += lk_len;
+
+		lk_len = bldr_log_read_once(buf, len);
+		len -= lk_len;
+		buf += lk_len;
+		lk_len_total += lk_len;
+
+		error = syslog_print_all(buf, len, clear);
+		error += lk_len_total;
+		break;
+#endif
 	/* Clear ring buffer */
 	case SYSLOG_ACTION_CLEAR:
 		syslog_print_all(NULL, 0, true);

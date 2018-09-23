@@ -165,6 +165,10 @@ obj-$(CONFIG_POWERCAP)		+= powercap/
 obj-$(CONFIG_MCB)		+= mcb/
 obj-$(CONFIG_RAS)		+= ras/
 obj-$(CONFIG_THUNDERBOLT)	+= thunderbolt/
+
+# NEBULA debug
+obj-$(CONFIG_NEBULA_DEBUG)		+= nebula_debug/
+
 obj-$(CONFIG_CORESIGHT)		+= coresight/
 obj-$(CONFIG_ESOC)		+= esoc/
 obj-$(CONFIG_ANDROID)		+= android/
