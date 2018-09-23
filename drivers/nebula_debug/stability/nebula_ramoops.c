@@ -21,7 +21,7 @@ static int __init nebula_ramoops_init(void)
 	struct device_node *pnode;
 	u32 val;
 
-	node = of_find_compatible_node(NULL, NULL, "nebula.ramoops");
+	node = of_find_compatible_node(NULL, NULL, "nebula,ramoops");
 	if (node) {
 		if (!of_device_is_available(node))
 			goto out;
