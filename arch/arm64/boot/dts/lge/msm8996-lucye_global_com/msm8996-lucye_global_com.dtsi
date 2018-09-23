@@ -51,6 +51,16 @@
 			reg = <0 0x88000000 0 0x6900000>;
 		};
 	};
+
+	nebula_ramoops@0 {
+		compatible = "nebula,ramoops";
+		linux,contiguous-region = <&ramoops_mem>;
+		record-size = <0x00008000>;  /*  32 KB */
+		console-size = <0x00080000>; /* 512 KB */
+		pmsg-size = <0x00040000>;    /* 256 KB */
+		ftrace-size = <0x00020000>;  /* 128 KB */
+		dump-oops = <0x1>;
+	};
 };
 
 &soc {
