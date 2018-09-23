@@ -1,0 +1,56 @@
+/* Copyright (c) 2019, The Linux Foundation. All rights reserved.
+ * (C) 2019 Nebula
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include <linux/kconfig.h>
+
+/ {
+	reserved-memory {
+		ramoops_mem: ramoops_region@c0000000 {
+			compatible = "removed-dma-pool";
+			no-map;
+			reg = <0 0xc0000000 0 0x100000>;
+		};
+
+		crash_fb_mem: crash_fb_mem@c0100000 {
+			linux,contiguous-region;
+			reg = <0 0xc0100000 0 0xc00000>;
+			label = "crash_fb_mem";
+		};
+
+		cont_splash_mem: cont_splash_mem@83401000 {
+			status = "disabled";
+		};
+
+		/delete-node/ dfps_data_mem@83400000;
+
+		removed_regions: removed_regions@85800000 {
+			reg = <0 0x85800000 0 0x2800000>;
+		};
+
+		modem_mem: modem_region@88800000 {
+			reg = <0 0x88000000 0 0x6900000>;
+		};
+	};
+	
+	nebula_ramoops@0 {
+		compatible = "nebula,ramoops";
+		linux,contiguous-region = <&ramoops_mem>;
+//		mem-size = <0xc0000>;
+//		mem-address = <0xc0000000>;
+		record-size = <0x00008000>;  /*  32 KB */
+		console-size = <0x00080000>; /* 512 KB */
+		ftrace-size = <0x00020000>;  /* 128 KB */
+		pmsg-size = <0x00040000>;    /* 256 KB */
+		dump-oops = <0x1>;
+	};
+};
