@@ -34,13 +34,10 @@
 #include <linux/slab.h>
 #include <linux/compiler.h>
 #include <linux/pstore_ram.h>
+#include <linux/nebula_debug_tools.h>
 
 #ifdef CONFIG_OF
 #include <linux/of.h>
-#endif
-
-#ifdef CONFIG_LGE_HANDLE_PANIC
-#include <soc/qcom/lge/lge_handle_panic.h>
 #endif
 
 #define RAMOOPS_KERNMSG_HDR "===="
@@ -614,8 +611,11 @@ static int ramoops_probe(struct platform_device *pdev)
 		cxt->size, (unsigned long long)cxt->phys_addr,
 		cxt->ecc_info.ecc_size, cxt->ecc_info.block_size);
 
-#ifdef CONFIG_LGE_HANDLE_PANIC
-	lge_set_ram_console_addr(cxt->phys_addr, cxt->size);
+#if defined(CONFIG_NEBULA_DEBUG_BOOTLOADER_LOG)
+	if (cxt->console_size)
+	{
+		bldr_log_init();
+	}
 #endif
 
 	return 0;
@@ -658,6 +658,9 @@ static int __exit ramoops_remove(struct platform_device *pdev)
 	/* TODO(kees): When pstore supports unregistering, call it here. */
 	kfree(cxt->pstore.buf);
 	cxt->pstore.bufsize = 0;
+#if defined(CONFIG_NEBULA_DEBUG_BOOTLOADER_LOG)
+	bldr_log_release();
+#endif
 
 	return 0;
 #endif
