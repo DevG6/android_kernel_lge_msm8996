@@ -1193,6 +1193,10 @@ static int send_signal(int sig, struct siginfo *info, struct task_struct *t,
 {
 	int from_ancestor_ns = 0;
 
+#ifdef CONFIG_NEBULA_PROCESS_DEBUG
+	send_signal_debug_dump(sig, t);
+#endif
+
 #if defined(CONFIG_HTC_DEBUG_DYING_PROCS)
 	if (sig == SIGKILL && !sigkill_pending(t)) {
 		unsigned long flags;

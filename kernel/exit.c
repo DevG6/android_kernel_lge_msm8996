@@ -61,6 +61,7 @@
 #include <asm/unistd.h>
 #include <asm/pgtable.h>
 #include <asm/mmu_context.h>
+#include <nebula_debug/stability/nebula_process_debug.h>
 
 static void exit_mm(struct task_struct *tsk);
 
@@ -896,6 +897,9 @@ do_group_exit(int exit_code)
 	struct signal_struct *sig = current->signal;
 
 	BUG_ON(exit_code & 0x80); /* core dumps don't get here */
+#ifdef CONFIG_NEBULA_PROCESS_DEBUG
+	do_group_exit_debug_dump(exit_code);
+#endif
 
 	if (signal_group_exit(sig))
 		exit_code = sig->group_exit_code;
